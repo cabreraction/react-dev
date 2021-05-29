@@ -3,6 +3,10 @@ import { helpers } from "../../Helpers/helpers";
 
 class Timer extends React.Component {
 
+    deleteTimer = () => {
+        this.props.onTimerDelete(this.props.id);
+    }
+
     render() {
         const elapsedString = helpers.renderElapsedString(this.props.elapsed);
         return (
@@ -26,7 +30,10 @@ class Timer extends React.Component {
                         >
                             <i className="edit icon" />
                         </span>
-                        <span className="right floated trash icon">
+                        <span
+                            className="right floated trash icon"
+                            onClick={this.deleteTimer}
+                        >
                             <i className="trash icon" />
                         </span>
                     </div>

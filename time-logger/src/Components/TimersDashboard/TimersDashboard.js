@@ -1,6 +1,7 @@
 import React from 'react';
 import EditableTimerList from "../EditableTimersList/EditableTimerList";
 import ToggleableTimerForm from "../ToggleableTimerForm/ToggleableTimerForm";
+import {helpers} from "../../Helpers/helpers";
 
 class TimersDashboard extends React.Component {
 
@@ -32,11 +33,29 @@ class TimersDashboard extends React.Component {
     }
 
     createTimer = (timer) => {
-        // concat to timers
+        const t = helpers.newTimer(timer);
+        this.setState({
+            timers: this.state.timers.concat(t)
+        })
     }
 
-    handleEditFormEdit = (timer) => {
+    handleEditFormSubmit = (attrs) => {
+        this.updateTimer(attrs);
+    }
 
+    updateTimer = (attrs) => {
+        let modifiedTimers = this.state.timers.map(timer => {
+           if (timer.id === attrs.id) {
+               let newTimer = { ...timer }
+               newTimer.title = attrs.title;
+               newTimer.project = attrs.project;
+               return newTimer;
+           } else {
+               return timer;
+           }
+        });
+
+        this.setState({ timers: modifiedTimers });
     }
 
     render() {
@@ -44,7 +63,10 @@ class TimersDashboard extends React.Component {
             <div className="ui three column centered grid" style={{marginBottom: "2em", marginTop: "2em"}} >
                 <div className="column">
                     <h1 style={{textAlign: "center"}}>Timers</h1>
-                    <EditableTimerList timers={this.state.timers} />
+                    <EditableTimerList
+                        timers={this.state.timers}
+                        onFormSubmit={this.handleEditFormSubmit}
+                    />
                     <ToggleableTimerForm
                         isOpen={false}
                         onFormSubmit={this.handleCreateFormSubmit}

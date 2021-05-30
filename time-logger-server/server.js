@@ -14,51 +14,97 @@ const server = http.createServer((req, res) => {
         if (req.url === "/api/timers") {
             return getTimers(res);
         } else {
-            // error
+            return error(res, 404);
         } 
     } else if (req.method === "POST") {
         switch(req.url) {
             case "/api/timers":
-                break;
+                return postTimers(req, res);
             case "/api/timers/start":
-                break;
+                return postTimerStart(req, res);
             case "/api/timers/stop":
-                break;
+                return postTimerStop(req, res);
             default:
-                // error
-                break;
+                return error(res, 404);
         }
     } else if (req.method === "PUT") {
         if (req.url === "/api/timers") {
-
+            return putTimers(req, res);
         } else {
-            // error
+            return error(res, 404);
         }
     } else if (req.method === "DELETE") {
         if (req.url === "/api/timers") {
-
+            return deleteTimers(req, res);
         } else {
-            // error
+            return error(res, 404);
         }
+    } else {
+        return error(res, 405);
     }
 
 });
 
 function getTimers(res) {
-    // read from data.json
-    const content = fs.readFileSync(filepath, "utf8");
+    const content = readContentFromFile("string");
     res.end(content);
 }
 
-function postTimers(res) {}
+function handleWriteOperations(req, res, featureFunction) {
+    if (req.headers["content-type"] !== "application/json") {
+        error(res, 415);
+        return;
+    }
 
-function postTimerStart(res) {}
+    let input = "";
+    req.on("data", (chunk) => {
+        input += chunk.toString();
+    });
 
-function postTimerStop(res) {}
+    req.on("end", () => {
+        featureFunction(input);
+        res.end(http.STATUS_CODES[200]);
+    });
+}
 
-function putTimers(res) {}
+function postTimers(req, res) {
+    handleWriteOperations(req, res, addTimerToSet);
+}
 
-function deleteTimers(res) {}
+function addTimerToSet(timerString) {
+    const timer = JSON.parse(timerString);
+    const content = readContentFromFile("array");
+    content.push(timer);
+    fileContent = JSON.stringify(content, null, 2);
+    fs.writeFile(filepath, fileContent, () => console.log("done"));
+}
+
+function postTimerStart(req, res) {
+    
+}
+
+function postTimerStop(req, res) {
+
+}
+
+function putTimers(req, res) {
+    
+}
+
+function deleteTimers(req, res) {}
+
+function readContentFromFile(type) {
+    const content = fs.readFileSync(filepath, "utf8");
+    if (type === "string")
+        return content;
+    else 
+        return JSON.parse(content);
+}
+
+function error(res, code) {
+    res.statusCode = code;
+    res.end(`{ "error": "${http.STATUS_CODES[code]}"}`);
+}
 
 server.listen(PORT, HOSTNAME, () => {
     console.log(`Server listening on port ${server.address().port}`);    

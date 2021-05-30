@@ -63,8 +63,49 @@ class TimersDashboard extends React.Component {
     }
 
     deleteTimer = (id) => {
-        let modifiedTimers = this.state.timers.filter(timer => timer.id != id);
+        let modifiedTimers = this.state.timers.filter(timer => timer.id !== id);
         this.setState({ timers: modifiedTimers });
+    }
+
+    handleStartClick = timerId => {
+        this.startTimer(timerId);
+    }
+
+    handleStopClick = timerId => {
+        this.stopTimer(timerId);
+    }
+
+    startTimer = (timerId) => {
+        const newTimers = this.state.timers.map(timer => {
+            if (timer.id === timerId) {
+                const aux = {
+                    ...timer,
+                    runningSince: Date.now()
+                }
+                return aux;
+            } else {
+                return timer;
+            }
+        });
+
+        this.setState({ timers: newTimers });
+    }
+
+    stopTimer = (timerId) => {
+        const newTimers = this.state.timers.map(timer => {
+            if (timer.id === timerId) {
+                const aux = {
+                    ...timer,
+                    runningSince: null,
+                    elapsed: timer.elapsed + (Date.now() - timer.runningSince)
+                }
+                return aux;
+            } else {
+                return timer;
+            }
+        });
+
+        this.setState({ timers: newTimers });
     }
 
     render() {
@@ -76,6 +117,8 @@ class TimersDashboard extends React.Component {
                         timers={this.state.timers}
                         onFormSubmit={this.handleEditFormSubmit}
                         onTimerDelete={this.handleDeleteTimer}
+                        onStartClick={this.handleStartClick}
+                        onStopClick={this.handleStopClick}
                     />
                     <ToggleableTimerForm
                         isOpen={false}

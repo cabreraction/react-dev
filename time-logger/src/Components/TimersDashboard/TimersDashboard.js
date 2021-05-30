@@ -2,6 +2,7 @@ import React from 'react';
 import EditableTimerList from "../EditableTimersList/EditableTimerList";
 import ToggleableTimerForm from "../ToggleableTimerForm/ToggleableTimerForm";
 import {helpers} from "../../Helpers/helpers";
+import timersClient from "../../Services/client";
 
 class TimersDashboard extends React.Component {
 
@@ -9,23 +10,17 @@ class TimersDashboard extends React.Component {
         super(props);
 
         this.state = {
-            timers: [
-                {
-                    title: 'Practice squat',
-                    project: 'Gym Chores',
-                    id: 1,
-                    elapsed: 5456099,
-                    runningSince: Date.now()
-                },
-                {
-                    title: 'Bake squash',
-                    project: 'Kitchen Chores',
-                    id: 2,
-                    elapsed: 1273998,
-                    runningSince: null,
-                }
-            ]
+            timers: []
         }
+    }
+
+    componentDidMount() {
+        this.loadTimersFromServer();
+        setInterval(this.loadTimersFromServer, 5000);
+    }
+
+    loadTimersFromServer = () => {
+        timersClient.getTimers();
     }
 
     handleCreateFormSubmit = (timer) => {

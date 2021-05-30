@@ -71,6 +71,18 @@ function postTimers(req, res) {
     handleWriteOperations(req, res, addTimerToSet);
 }
 
+function postTimerStart(req, res) {
+    handleWriteOperations(req, res, startTimer);
+}
+
+function postTimerStop(req, res) {
+    handleWriteOperations(req, res, stopTimer);
+}
+
+function putTimers(req, res) {
+    handleWriteOperations(req, res, updateTimer);
+}
+
 function addTimerToSet(timerString) {
     const timer = JSON.parse(timerString);
     const content = readContentFromFile("array");
@@ -79,17 +91,11 @@ function addTimerToSet(timerString) {
     fs.writeFile(filepath, fileContent, () => console.log("done"));
 }
 
-function postTimerStart(req, res) {
-    
-}
+function startTimer(timerString) {}
 
-function postTimerStop(req, res) {
+function stopTimer(timerString) {}
 
-}
-
-function putTimers(req, res) {
-    
-}
+function updateTimer(timerString) {}
 
 function deleteTimers(req, res) {}
 

@@ -58,7 +58,7 @@ class TimerForm extends React.Component {
                                 {submitText}
                             </button>
                             <button
-                                className="ui basic red button"
+                                className="ui basic green button"
                                 onClick={this.props.onFormClose}
                             >
                                 Cancel

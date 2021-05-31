@@ -1,8 +1,6 @@
 const getTimers = () => {
     return fetch('http://localhost:8080/api/timers')
-        .then((response) => {
-            console.log(response);
-        })
+        .then(res => res.json());
 }
 
 const createTimer = (timer) => {

@@ -2,6 +2,11 @@
 const http = require('http');
 const HOSTNAME = process.env.HOSTNAME || "0.0.0.0";
 const PORT = process.env.PORT || 8080;
+const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
+    "Access-Control-Max-Age": 2592000
+}
 
 // fs dependencies
 const fs = require("fs");
@@ -47,6 +52,7 @@ const server = http.createServer((req, res) => {
 
 function getTimers(res) {
     const content = readContentFromFile("string");
+    res.writeHead(200, headers);
     res.end(content);
 }
 

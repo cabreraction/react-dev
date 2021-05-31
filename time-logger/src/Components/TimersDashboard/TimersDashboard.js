@@ -20,7 +20,8 @@ class TimersDashboard extends React.Component {
     }
 
     loadTimersFromServer = () => {
-        timersClient.getTimers();
+        timersClient.getTimers()
+            .then(res => this.setState({ timers: res }));
     }
 
     handleCreateFormSubmit = (timer) => {

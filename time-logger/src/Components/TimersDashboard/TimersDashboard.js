@@ -33,6 +33,8 @@ class TimersDashboard extends React.Component {
         this.setState({
             timers: this.state.timers.concat(t)
         })
+
+        timersClient.createTimerRequest(t);
     }
 
     handleEditFormSubmit = (attrs) => {
@@ -85,6 +87,7 @@ class TimersDashboard extends React.Component {
         });
 
         this.setState({ timers: newTimers });
+        timersClient.startTimer({ id: timerId, start: Date.now() });
     }
 
     stopTimer = (timerId) => {
@@ -102,6 +105,7 @@ class TimersDashboard extends React.Component {
         });
 
         this.setState({ timers: newTimers });
+        timersClient.stopTimer({ id: timerId, stop: Date.now() })
     }
 
     render() {

@@ -14,7 +14,8 @@ const path = require("path");
 const filepath = path.join(process.cwd(), "data.json");
 
 const server = http.createServer((req, res) => {
-    
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
     if (req.method === "GET") {
         if (req.url === "/api/timers") {
             return getTimers(res);
@@ -44,6 +45,10 @@ const server = http.createServer((req, res) => {
         } else {
             return error(res, 404);
         }
+    } else if (req.method === "OPTIONS") {
+        res.writeHead(204, headers);
+        res.end();
+        return;
     } else {
         return error(res, 405);
     }
@@ -58,6 +63,7 @@ function getTimers(res) {
 
 function handleWriteOperations(req, res, featureFunction) {
     if (req.headers["content-type"] !== "application/json") {
+        console.log(req.headers["content-type"]);
         error(res, 415);
         return;
     }
@@ -69,6 +75,7 @@ function handleWriteOperations(req, res, featureFunction) {
 
     req.on("end", () => {
         featureFunction(input);
+        res.writeHead(200, headers);
         res.end(http.STATUS_CODES[200]);
     });
 }
@@ -93,13 +100,45 @@ function addTimerToSet(timerString) {
     const timer = JSON.parse(timerString);
     const content = readContentFromFile("array");
     content.push(timer);
+    console.log('here');
     fileContent = JSON.stringify(content, null, 2);
     fs.writeFile(filepath, fileContent, () => console.log("done"));
 }
 
-function startTimer(timerString) {}
+function startTimer(timerString) {
+    const timer = JSON.parse(timerString);
+    const content = readContentFromFile("array");
+    const modifiedContent = content.map(arrayTimer => {
+        if (arrayTimer.id === timer.id) {
+            return {
+                ...arrayTimer,
+                runningSince: timer.start
+            }
+        } else {
+            return arrayTimer;
+        }
+    });
+    fileContent = JSON.stringify(modifiedContent, null, 2);
+    fs.writeFile(filepath, fileContent, () => console.log("done"));
+}
 
-function stopTimer(timerString) {}
+function stopTimer(timerString) {
+    const timer = JSON.parse(timerString);
+    const content = readContentFromFile("array");
+    const modifiedContent = content.map(arrayTimer => {
+        if (arrayTimer.id === timer.id) {
+            return {
+                ...arrayTimer,
+                runningSince: null,
+                elapsed: arrayTimer.elapsed + (timer.stop - arrayTimer.runningSince)
+            }
+        } else {
+            return arrayTimer;
+        }
+    });
+    fileContent = JSON.stringify(modifiedContent, null, 2);
+    fs.writeFile(filepath, fileContent, () => console.log("done"));
+}
 
 function updateTimer(timerString) {}
 

@@ -1,3 +1,4 @@
+const { uuid } = require('uuidv4');
 
 const millisecondsToHuman = (elapsedString) => {
     let hours = ((elapsedString / 1000) / 60) / 60;
@@ -27,6 +28,7 @@ export const helpers = {
     newTimer: (timer) => {
         return {
             ...timer,
+            id: uuid(),
             elapsed: 0,
             runningSince: null
         }

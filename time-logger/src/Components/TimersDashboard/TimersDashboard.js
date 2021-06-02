@@ -53,7 +53,17 @@ class TimersDashboard extends React.Component {
            }
         });
 
+        let timer = null;
+        for (let i = 0; i < this.state.timers.length; i++) {
+            if (this.state.timers[i].id === attrs.id) {
+                timer = {...this.state.timers[i] };
+            }
+        }
+        timer.title = attrs.title;
+        timer.project = attrs.project;
+
         this.setState({ timers: modifiedTimers });
+        timersClient.updateTimerInfo(timer);
     }
 
     handleDeleteTimer = (id) => {
@@ -63,6 +73,8 @@ class TimersDashboard extends React.Component {
     deleteTimer = (id) => {
         let modifiedTimers = this.state.timers.filter(timer => timer.id !== id);
         this.setState({ timers: modifiedTimers });
+
+        timersClient.deleteTimer({ id: id });
     }
 
     handleStartClick = timerId => {

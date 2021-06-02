@@ -45,7 +45,13 @@ const updateTimerInfo = (timer) => {
 }
 
 const deleteTimer = (timer) => {
-
+    fetch('http://localhost:8080/api/timers', {
+        method: 'delete',
+        body: JSON.stringify(timer),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
 }
 
 const timersClient = {

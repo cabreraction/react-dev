@@ -1,7 +1,5 @@
 import React from "react";
 
-const { uuid } = require('uuidv4');
-
 class TimerForm extends React.Component {
     state = {
         title: this.props.title || '',
@@ -22,7 +20,7 @@ class TimerForm extends React.Component {
 
     handleSubmit = () => {
         this.props.onFormSubmit({
-            id: uuid(),
+            id: this.props.id,
             title: this.state.title,
             project: this.state.project
         });
@@ -46,7 +44,7 @@ class TimerForm extends React.Component {
                             <label>Project</label>
                             <input
                                 type="text"
-                                value={this.props.project}
+                                value={this.state.project}
                                 onChange={this.handleProjectChange}
                             />
                         </div>

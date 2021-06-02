@@ -5,7 +5,8 @@ const PORT = process.env.PORT || 8080;
 const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
-    "Access-Control-Max-Age": 2592000
+    "Access-Control-Max-Age": 2592000,
+    "Access-Control-Allow-Headers": "Content-Type"
 }
 
 // fs dependencies
@@ -41,7 +42,7 @@ const server = http.createServer((req, res) => {
         }
     } else if (req.method === "DELETE") {
         if (req.url === "/api/timers") {
-            return deleteTimers(req, res);
+            return deleteTimer(req, res);
         } else {
             return error(res, 404);
         }
@@ -63,7 +64,6 @@ function getTimers(res) {
 
 function handleWriteOperations(req, res, featureFunction) {
     if (req.headers["content-type"] !== "application/json") {
-        console.log(req.headers["content-type"]);
         error(res, 415);
         return;
     }
@@ -96,11 +96,14 @@ function putTimers(req, res) {
     handleWriteOperations(req, res, updateTimer);
 }
 
+function deleteTimer(req, res) {
+    handleWriteOperations(req, res, removeTimer);
+}
+
 function addTimerToSet(timerString) {
     const timer = JSON.parse(timerString);
     const content = readContentFromFile("array");
     content.push(timer);
-    console.log('here');
     fileContent = JSON.stringify(content, null, 2);
     fs.writeFile(filepath, fileContent, () => console.log("done"));
 }
@@ -140,9 +143,27 @@ function stopTimer(timerString) {
     fs.writeFile(filepath, fileContent, () => console.log("done"));
 }
 
-function updateTimer(timerString) {}
+function updateTimer(timerString) {
+    const timer = JSON.parse(timerString);
+    const content = readContentFromFile("array");
+    const modifiedContent = content.map(t => {
+        if (t.id === timer.id) {
+            return timer;
+        } else {
+            return t;
+        }
+    });
+    fileContent = JSON.stringify(modifiedContent, null, 2);
+    fs.writeFile(filepath, fileContent, () => console.log("done"));
+}
 
-function deleteTimers(req, res) {}
+function removeTimer(timerString) {
+    const timer = JSON.parse(timerString);
+    const content = readContentFromFile("array");
+    const modifiedContent = content.filter(t => t.id !== timer.id);
+    fileContent = JSON.stringify(modifiedContent, null, 2);
+    fs.writeFile(filepath, fileContent, () => console.log("done"));
+}
 
 function readContentFromFile(type) {
     const content = fs.readFileSync(filepath, "utf8");

@@ -1,10 +1,11 @@
 import './App.css';
 
 import BasicForm from "./BasicForm/BasicForm";
+import SignUpSheet from "./SignUpSheet/SignUpSheet";
 
 function App() {
   return (
-    <BasicForm />
+    <SignUpSheet />
   );
 }
 

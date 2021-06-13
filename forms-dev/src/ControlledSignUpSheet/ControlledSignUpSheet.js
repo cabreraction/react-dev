@@ -1,7 +1,7 @@
 import React from "react";
-
 import './ControlledSignUpSheet.css'
-
+import isEmail from 'validator/lib/isEmail';
+import Field from "../Field/Field";
 export default class ControlledSignUpSheet extends React.Component {
     constructor(props) {
         super(props);
@@ -11,7 +11,8 @@ export default class ControlledSignUpSheet extends React.Component {
             fields: {
                 name: "",
                 email: ""
-            }
+            },
+            fieldErrors: {}
         }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -19,23 +20,45 @@ export default class ControlledSignUpSheet extends React.Component {
     }
 
     onFormSubmit(evt) {
+        const people = this.state.people;
+        const person = this.state.fields;
+
+        evt.preventDefault();
+
+        if (this.validate()) return;
+
         this.setState({
-            people: [ ...this.state.people, this.state.fields ],
+            people: people.concat(person),
             fields: {
                 name: '',
                 email: ''
             }
-        })
-        evt.preventDefault();
+        });
     }
 
-    onInputChange(evt) {
-        const name = evt.target.name;
-        const value = evt.target.value;
+    validate = () => {
+        const person = this.state.fields;
+        const fieldErrors = this.state.fieldErrors;
+        const errMessages = Object.keys(fieldErrors).filter((k) => fieldErrors[k]);
 
-        const fields = { ...this.state.fields }
+        if (!person.name)
+            return true;
+        if (!person.email)
+            return true;
+        if(errMessages.length)
+            return true;
+
+        return false;
+    }
+
+    onInputChange({name, value, error}) {
+        const fields = Object.assign({}, this.state.fields);
+        const fieldErrors = Object.assign({}, this.state.fieldErrors);
+
         fields[name] = value;
-        this.setState({ fields });
+        fieldErrors[name] = error;
+
+        this.setState({fields, fieldErrors});
     }
 
     render() {
@@ -45,21 +68,20 @@ export default class ControlledSignUpSheet extends React.Component {
                     Sign Up Sheet
                 </h1>
                 <form onSubmit={this.onFormSubmit}>
-                    <input
-                        type="text"
+                    <Field
                         name="name"
                         placeholder="Name"
                         value={this.state.fields.name}
-                        onChange={this.onInputChange}
-                    />
-                    <input
-                        type="email"
-                        name="email"
+                        validate={val => (val ? false : 'Name Required')}
+                        onChange={this.onInputChange} />
+                    <Field
                         placeholder="Email"
+                        name="email"
                         value={this.state.fields.email}
                         onChange={this.onInputChange}
+                        validate={val => (isEmail(val) ? false : 'Invalid Email')}
                     />
-                    <input type="submit"/>
+                    <input type="submit" disabled={this.validate()}/>
                 </form>
                 <div>
                     <h2>Names</h2>
